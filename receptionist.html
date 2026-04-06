@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard | MediVault</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand">
+            <img src="images/logo.png" alt="Logo" style="height: 30px;">
+            <span style="font-weight: bold; color: var(--primary-dark);">MediVault</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-tab active" data-target="receptionist-appointments"><i class="fas fa-calendar"></i> Appointments</a>
+            <a href="#" class="nav-tab" data-target="receptionist-add"><i class="fas fa-plus-circle"></i> New Appointment</a>
+            <a href="#" class="nav-tab" data-target="receptionist-slots"><i class="fas fa-clock"></i> Manage Time Slots</a>
+            <a href="#" class="nav-tab" data-target="receptionist-settings"><i class="fas fa-user-cog"></i> Settings</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section id="receptionist-appointments" class="tab-content">
+            <div class="card">
+                <h3>Today's Appointments</h3>
+                <div id="appointments-list"></div>
+            </div>
+        </section>
+
+        <section id="receptionist-add" class="tab-content hidden">
+            <div class="card">
+                <h3>Add New Appointment</h3>
+                <form id="appointment-form">
+                    <!-- Patient Search Section -->
+                    <div class="input-group">
+                        <label>Search Patient by Name</label>
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <input type="text" id="patient-name-search" placeholder="Enter patient name" style="flex: 1;">
+                            <button type="button" id="search-patient-btn" class="btn-secondary" style="padding: 10px 20px;">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                        <small id="search-status" style="color: var(--text-muted); display: block; margin-bottom: 10px;"></small>
+                    </div>
+
+                    <!-- Patient Details Display (Hidden by default) -->
+                    <div id="patient-details-box" style="display: none; background: #f5f5f5; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div>
+                                <strong id="found-patient-name"></strong>
+                                <p style="margin: 4px 0; color: var(--text-muted); font-size: 0.9rem;">UUID: <code id="found-patient-uuid" style="background: #e0e0e0; padding: 2px 6px; border-radius: 4px;"></code></p>
+                            </div>
+                            <button type="button" id="clear-patient-btn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- Manual Entry Section -->
+                    <div class="input-group">
+                        <label>Patient Name <span style="color: var(--text-muted); font-size: 0.85rem;">(If not found above, enter manually)</span></label>
+                        <input type="text" id="patient-name" placeholder="Enter patient name" required>
+                    </div>
+
+                    <!-- Hidden patient_id field (populated when found) -->
+                    <input type="hidden" id="patient-id-field">
+
+                    <div class="input-group">
+                        <label>Doctor</label>
+                        <select id="doctor-select" required>
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="appointment-date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Available Time Slots</label>
+                        <select id="appointment-slot-select" required>
+                            <option value="">Select Doctor & Date first</option>
+                        </select>
+                        <small id="appointment-slot-info" style="color: var(--text-muted); margin-top: 4px; display: block;">Choose a doctor and date to see available slots.</small>
+                    </div>
+                    <div class="input-group">
+                        <label>Reason</label>
+                        <textarea id="appointment-reason" placeholder="Appointment reason"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Schedule Appointment</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="receptionist-slots" class="tab-content hidden">
+            <div class="card">
+                <h3><i class="fas fa-plus"></i> Create New Time Slot</h3>
+                <form id="create-slot-form">
+                    <div class="input-group">
+                        <label>Doctor</label>
+                        <select id="slot-doctor-select" required>
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="slot-date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Start Time</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="number" id="slot-start-hour" min="1" max="12" placeholder="HH" required style="flex: 0.5; text-align: center;">
+                            <span style="font-weight: bold;">:</span>
+                            <input type="number" id="slot-start-minute" min="0" max="59" placeholder="MM" step="15" required style="flex: 0.5; text-align: center;">
+                            <select id="slot-start-period" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer;">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>End Time</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="number" id="slot-end-hour" min="1" max="12" placeholder="HH" required style="flex: 0.5; text-align: center;">
+                            <span style="font-weight: bold;">:</span>
+                            <input type="number" id="slot-end-minute" min="0" max="59" placeholder="MM" step="15" required style="flex: 0.5; text-align: center;">
+                            <select id="slot-end-period" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer;">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Max Capacity</label>
+                        <input type="number" id="slot-capacity" min="1" max="100" value="5" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Create Slot</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0;"><i class="fas fa-list"></i> Available Time Slots</h3>
+                    <button onclick="loadSlots()" id="refresh-slots-btn" class="btn-secondary" style="font-size: 0.85rem; padding: 8px 14px; border-radius: 6px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div id="slots-list" style="min-height: 200px;">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        No time slots created yet. Create your first slot above.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="receptionist-settings" class="tab-content hidden">
+            <div class="card">
+                <h3><i class="fas fa-user-cog"></i> Settings</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Log out of your receptionist account and manage session actions.</p>
+                <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="supabaseclient.js"></script>
+    <script src="receptionist.js"></script>
+</body>
+</html>

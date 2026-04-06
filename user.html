@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard | MediVault</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand">
+            <img src="images/logo.png" alt="Logo" style="height: 50px;">
+            <span style="font-weight: bold; color: var(--primary-dark); font-size: 2rem; line-height: 50px; vertical-align: middle; text-align: center;">MediVault</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-tab active" data-target="home-section"><i class="fas fa-house-user"></i> Dashboard</a>
+            <a href="#" class="nav-tab" data-target="appointments-section"><i class="fas fa-calendar"></i> Appointments</a>
+            <a href="#" class="nav-tab" data-target="records-section"><i class="fas fa-folder-open"></i> Records</a>
+            <a href="#" class="nav-tab" data-target="logs-section"><i class="fas fa-clipboard-list"></i> Activity</a>
+            <a href="#" class="nav-tab" data-target="symptom-section"><i class="fas fa-stethoscope"></i> Symptom Checker</a>
+            <a href="#" class="nav-tab" data-target="settings-section"><i class="fas fa-user-cog"></i> Settings</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section id="home-section" class="tab-content">
+            <div class="welcome-card-simple">
+                <div class="welcome-text-simple">
+                    <h1 id="welcome-name">Welcome, Patient</h1>
+                    <p>Your health dashboard is ready</p>
+                </div>
+            </div>
+
+            <div class="info-cards-grid">
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Age</h3>
+                        <p id="p-age">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-venus-mars"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Gender</h3>
+                        <p id="p-gender">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Blood Group</h3>
+                        <p id="p-blood">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Emergency Contact</h3>
+                        <p id="p-emergency">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Chronic Illnesses</h3>
+                        <p id="p-chronic">None</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-allergies"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Allergies</h3>
+                        <p id="p-allergies">None</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="medications-card">
+                <div class="card-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Current Medications</h3>
+                    <p id="p-meds">-</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="appointments-section" class="tab-content hidden">
+            <div class="card">
+                <h3>Book Appointment</h3>
+                <form id="book-appointment-form">
+                    <div class="input-group">
+                        <label>Doctor</label>
+                        <select id="book-doctor-select" required>
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="display:flex; align-items:center; gap: 10px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:220px;">
+                            <label>Date</label>
+                            <input type="date" id="book-appointment-date" required>
+                        </div>
+                        <button type="button" id="load-availability-button" class="btn-secondary" style="margin-top: 1.8rem;">Load Available Slots</button>
+                    </div>
+                    <div class="input-group">
+                        <label>Available Time Slots</label>
+                        <select id="available-slot-select" required>
+                            <option value="">Select a Slot</option>
+                        </select>
+                        <small id="slot-availability-info" class="muted-text">Load slots to view availability and remaining seats.</small>
+                    </div>
+                    <button type="submit" class="btn-primary">Book Appointment</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>My Appointments</h3>
+                <div id="my-appointments-list"></div>
+            </div>
+        </section>
+
+        <section id="records-section" class="tab-content hidden">
+            <div class="records-upload">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3>Upload Medical Record</h3>
+                <p>Securely store your PDF medical documents</p>
+                <input type="file" id="pdf-upload" accept="application/pdf">
+                <button onclick="uploadRecord()" id="upload-btn" class="btn-primary">Upload to Vault</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-folder-open"></i> Stored Documents</h3>
+                <div id="record-list">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                        No medical records uploaded yet.<br>
+                        Use the upload form above to add your first document.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="logs-section" class="tab-content hidden">
+            <div class="activity-header">
+                <h2><i class="fas fa-clipboard-list"></i> Activity Log</h2>
+                <p>Monitor all interactions with your medical records</p>
+            </div>
+
+            <div class="activity-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Record Access History</h4>
+                        <p>Track which doctors have viewed your records</p>
+                        <table id="logs-table" style="width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                            <thead style="background: var(--primary); color: white;">
+                                <tr>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--primary-dark);">Doctor</th>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--primary-dark);">Action</th>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--primary-dark);">When</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div style="max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tbody id="logs-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Prescriptions</h4>
+                        <p>View all prescriptions issued by your doctors</p>
+                        <div id="prescriptions-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="symptom-section" class="tab-content hidden">
+            <div class="card">
+                <h3><i class="fas fa-robot"></i> AI Symptom Checker</h3>
+                <p>Describe your symptoms in detail (e.g., "I've had a sharp headache and nausea for 3 hours").</p>
+                <textarea id="symptom-input" placeholder="Enter symptoms here..." style="width:100%; height:120px; margin: 15px 0; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;"></textarea>
+                <button id="analyze-btn" onclick="analyzeSymptoms()" class="btn-primary" style="width: 100%;">Analyze Symptoms</button>
+
+                <div id="ai-result-box" class="hidden" style="margin-top: 20px; padding: 20px; border-radius: 12px; background: #f0f7ff; border-left: 6px solid var(--primary);">
+                    <h4 id="ai-status" style="margin-bottom: 10px; color: var(--primary-dark);"></h4>
+                    <div id="ai-response-text" style="line-height: 1.6; color: var(--text-main);"></div>
+                    <div id="ai-specialist-text" style="margin-top: 14px; padding: 12px; border-radius: 8px; background: #eaf4ff; border: 1px solid #aad0ff; color: #0b5394; font-weight: 600;">
+                        Suggested Specialist: <span id="ai-specialist-value">General physician</span>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.8rem; color: #666; font-style: italic;">
+                        <strong>Disclaimer:</strong> This is an AI analysis, not a medical diagnosis. Please consult a doctor for professional advice.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-section" class="tab-content hidden">
+            <div class="settings-header">
+                <h2><i class="fas fa-user-cog"></i> Account Settings</h2>
+                <p>Manage your privacy and personal information</p>
+            </div>
+
+            <div class="settings-grid">
+
+
+                <div class="settings-card">
+                    <div class="card-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Update Profile</h3>
+                        <p>Keep your personal information current</p>
+                        <form id="update-info-form" class="settings-form">
+                            <div class="form-row">
+                                <div class="input-group"><label>Full Name</label><input type="text" id="set-name"></div>
+                                <div class="input-group">
+                                    <label>Age</label>
+                                    <input type="number" id="set-age" min="0" max="150">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label>Gender</label>
+                                    <select id="set-gender">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Blood Group</label>
+                                    <select id="set-blood">
+                                        <option value="">Select Blood Group</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Emergency Contact</label>
+                                <input type="text" id="set-emergency" placeholder="Enter 10-digit phone number" maxlength="10">
+                            </div>
+                            <div class="input-group"><label>Chronic Illnesses (comma separated)</label><input type="text" id="set-chronic"></div>
+                            <div class="input-group"><label>Allergies (comma separated)</label><input type="text" id="set-allergies"></div>
+                            <div class="input-group"><label>Current Medications</label><textarea id="set-meds"></textarea></div>
+                            <button type="submit" class="btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="logout-action" style="margin-top: 18px; text-align: center;">
+                <button onclick="logout()" class="btn-danger btn-logout" style="width: 240px; max-width: 90%;">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i>
+                    Logout
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script src="supabaseclient.js"></script>
+    <script src="user.js"></script>
+</body>
+</html>

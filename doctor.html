@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | MediVault</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-brand">
+            <img src="images/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">
+            <span style="font-weight: bold; color: var(--primary-dark); font-size: 1.2rem;">MediVault</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-tab active" data-target="doctor-home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-tab" data-target="doctor-appointments">
+                <i class="fas fa-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="#" class="nav-tab" data-target="doctor-logs">
+                <i class="fas fa-history"></i>
+                <span>Activity</span>
+            </a>
+        </div>
+        <div class="nav-actions">
+            <button onclick="logout()" class="btn-logout" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section id="doctor-home" class="tab-content">
+            <div class="card">
+                <h2 id="doc-welcome">Welcome, Dr. Loading...</h2>
+                <p id="doc-specialization" style="color:var(--text-muted)">General Practitioner</p>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f7ff; border-radius: 8px;">
+                    <h4>Quick Tip:</h4>
+                    <p style="font-size: 0.9rem;">View today's appointments and access patient records directly.</p>
+                </div>
+            </div>
+
+            <!-- Active Consultation Section -->
+            <div id="active-consultation-section" style="display: none; margin-top: 20px;">
+                <div class="card" style="border-left: 5px solid var(--primary);">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">
+                        <i class="fas fa-user-md"></i> Active Consultation
+                    </h3>
+                    <div id="active-consultation-content">
+                        <!-- Consultation content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="doctor-appointments" class="tab-content hidden">
+            <div class="section-header">
+                <h3><i class="fas fa-calendar-alt"></i> Today's Appointments</h3>
+                <p class="section-subtitle">Manage your scheduled appointments and start consultations</p>
+            </div>
+            <div class="appointments-container">
+                <div id="doctor-appointments-list" class="appointments-list">
+                    <!-- Appointments will be loaded here -->
+                </div>
+                <div class="no-appointments" id="no-appointments-message" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <h4>No Appointments Today</h4>
+                        <p>You have no scheduled appointments for today.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="doctor-logs" class="tab-content hidden">
+            <div class="section-header">
+                <h3><i class="fas fa-history"></i> Activity History</h3>
+                <p class="section-subtitle">Your recent prescriptions and activities</p>
+            </div>
+            <div class="logs-container">
+                <div class="logs-table-container">
+                    <table id="doc-presc-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user-injured"></i> Patient</th>
+                                <th><i class="fas fa-pills"></i> Medication</th>
+                                <th><i class="fas fa-calendar-day"></i> Date</th>
+                                <th><i class="fas fa-check-circle"></i> Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="no-logs" id="no-logs-message" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h4>No Activity Yet</h4>
+                        <p>Your prescription history will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="supabaseclient.js"></script>
+    <script src="doctor.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediVault | Secure Access</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="images/logo.png" alt="MediVault Logo" class="logo">
+                <h1>MediVault</h1>
+                <p>Your Health, Secured.</p>
+            </div>
+
+            <div class="tab-group">
+                <button id="tab-login" class="active" onclick="toggleView('login')">Login</button>
+                <button id="tab-signup" onclick="toggleView('signup')">Sign Up</button>
+            </div>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <button type="button" onclick="sendPasswordReset(document.getElementById('login-email').value)" style="background: none; border: none; color: var(--primary); cursor: pointer; text-decoration: underline; font-size: 0.9rem;">Forgot Password?</button>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+
+            <form id="signup-form" class="hidden">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe" required>
+                </div>
+                <div class="input-group">
+                    <label>I am a...</label>
+                    <select id="signup-role" required>
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="receptionist">Receptionist</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="signup-email" placeholder="name@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a strong password" required>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+
+            <p id="message" class="auth-message"></p>
+        </div>
+    </div>
+
+    <script src="supabaseclient.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
